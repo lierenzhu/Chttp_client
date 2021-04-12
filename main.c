@@ -3,7 +3,7 @@
  * @Author: lierenzhu
  * @Date: 2021-04-12 09:21:40
  * @LastEditors: lierenzhu
- * @LastEditTime: 2021-04-12 09:25:58
+ * @LastEditTime: 2021-04-12 19:32:52
  * @FilePath: \Chttp_client\main.c
  */
 #include "http.h"
@@ -16,6 +16,7 @@ int main() {
 
     http = ft_http_new();
 
+    /*
     while (1) {
         char ch = getchar();
 
@@ -29,6 +30,7 @@ int main() {
         switch (ch) {
         case 'a':
         {
+     */
             char *url;
             scanf("%s", url);
             const char* body = NULL;
@@ -37,6 +39,7 @@ int main() {
 
             // body = ft_http_sync_request(http, "http://112.124.110.213:8005/OS01", M_POST);
             printf("ft_http get:%s\n", body);
+        /*
         }
         break;
         case 'd':
@@ -51,6 +54,7 @@ int main() {
         break;
         }
     }
+        */
 
     if (http) {
         ft_http_destroy(http);
