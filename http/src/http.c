@@ -782,14 +782,20 @@ HTTP_API const char* ft_http_sync_request(ft_http_client_t* http, const char* ur
 
 	cJSON *root = NULL;
 	cJSON *test = NULL;
+	cJSON *rand = NULL;
 	root = cJSON_CreateObject();
+	rand = cJSON_CreateObject();
+/*
 	cJSON_AddStringToObject(root, "method", "OS01");
 	cJSON_AddStringToObject(root, "productId", "1553061026000");
 	cJSON_AddStringToObject(root, "sn", "123456789011112");
 	cJSON_AddStringToObject(root, "imei", "862075031356789");
 	cJSON_AddStringToObject(root, "osVersion", "geneva-mp3-nb_V170");
 	cJSON_AddNumberToObject(root, "status", 0);
-
+*/
+	cJSON_AddNumberToObject(rand, "randomB", -1172028779);
+	cJSON_AddStringToObject(root, "carVin", "BNHED7EGFF8A7146");
+	cJSON_AddItemToObject(root, "identityAuthInfo", rand);
 	char *out = cJSON_Print(root);
 
 	if(http == NULL)
@@ -801,6 +807,7 @@ HTTP_API const char* ft_http_sync_request(ft_http_client_t* http, const char* ur
 	http->download = 0;
 
 	http->error_code = http_internal_sync_request(http, url, (char*)out, strlen(out), 0, 0);
+/*
 	free(out);
 	cJSON_Delete(root);
 	root = cJSON_Parse(http->body);
@@ -808,6 +815,7 @@ HTTP_API const char* ft_http_sync_request(ft_http_client_t* http, const char* ur
 	printf("url=%s\n", test->valuestring);
 	
 	cJSON_Delete(root);
+*/
 	return http->body;
 }
 

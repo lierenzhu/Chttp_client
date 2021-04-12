@@ -29,7 +29,10 @@ int main() {
         switch (ch) {
         case 'a':
         {
+            char *url;
+            scanf("%s", url);
             const char* body = NULL;
+            body = ft_http_sync_request(http, url, M_POST);
             //ft_http_set_timeout(http, 4);
 
             // body = ft_http_sync_request(http, "http://112.124.110.213:8005/OS01", M_POST);

@@ -1,2 +1,7 @@
 build
 SI
+
+/CMakeFiles/*
+cmake_install.camke
+CMakeCache.txt
+Makefile
