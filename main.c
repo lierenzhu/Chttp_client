@@ -1,3 +1,11 @@
+/*
+ * @Description: 
+ * @Author: lierenzhu
+ * @Date: 2021-04-12 09:21:40
+ * @LastEditors: lierenzhu
+ * @LastEditTime: 2021-04-12 09:25:58
+ * @FilePath: \Chttp_client\main.c
+ */
 #include "http.h"
 #include <stdio.h>
 
@@ -24,7 +32,7 @@ int main() {
             const char* body = NULL;
             //ft_http_set_timeout(http, 4);
 
-            body = ft_http_sync_request(http, "http://112.124.110.213:8005/OS01", M_POST);
+            // body = ft_http_sync_request(http, "http://112.124.110.213:8005/OS01", M_POST);
             printf("ft_http get:%s\n", body);
         }
         break;
