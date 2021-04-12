@@ -480,7 +480,11 @@ static int http_read_write(ft_http_client_t* http, const char* data, int len, in
 
 
 		r = read ? recv(http->fd, (char*)data + n, len - n, 0) : send(http->fd, data + n, len - n, 0);
-		
+		//CHANGE:
+		if(read==0)
+		{
+			printf("%s",data);
+		}	
 		
 		if(r > 0)
 		{
@@ -629,6 +633,9 @@ static int http_internal_sync_request(ft_http_client_t* http, const char* url,
 	http->parser_statue = 0;
 	http->error_code = 0;
 	
+//CHANGE:
+	printf("\n%s\n",url);
+
 	if(http->timeout == 0) http->timeout = 15000;
 
 	if( http_parser_parse_url(url, strlen(url), 0, &u) != 0 )
@@ -797,6 +804,9 @@ HTTP_API const char* ft_http_sync_request(ft_http_client_t* http, const char* ur
 	cJSON_AddStringToObject(root, "carVin", "BNHED7EGFF8A7146");
 	cJSON_AddItemToObject(root, "identityAuthInfo", rand);
 	char *out = cJSON_Print(root);
+
+	//CHANGE:
+	printf("\n%s\n",out);
 
 	if(http == NULL)
 	{
