@@ -1,0 +1,32 @@
+
+.PHONY: $(TARGET) clean
+
+#-------------------------------------------------------------------------------
+# Main target
+#-------------------------------------------------------------------------------
+TARGET = main
+SOURCES = main.c \
+	./http/src/http.c \
+	./http/src/http_parser.c \
+	./cjson/src/cJSON.c \
+	./cjson/src/cJSON_Utils.c 
+
+INC = -I./cjson/inc -I./http/inc
+
+OBJECT = *.o
+
+all: $(TARGET)
+prep:
+
+$(TARGET): $(OBJECT)
+	${CC} $(OBJECT)  $(CFLAGS) -o $(TARGET) $(LDFLAGS)
+	@echo "strip the symbol tables..."
+	${STRIP} $(TARGET) -s
+
+
+$(OBJECT): $(SOURCES)
+	${CC} ${CFLAGS} ${INC} ${INCLUDE} -c $(SOURCES)
+
+
+clean:  
+	@rm $(TARGET) $(OBJECT)

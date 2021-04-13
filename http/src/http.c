@@ -18,20 +18,20 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/select.h>
-#include <time.h> 
+#include <sys/time.h> 
 #include <ctype.h>
 #include <netdb.h>
 #include <strings.h>
 
-#ifdef PLATFORM_LINUX
+//#ifdef PLATFORM_LINUX
 	#define _strdup strdup
 	#define _stricmp strcasecmp
 	#define _strnicmp strncasecmp
-#else 
-	#define _strdup strdup
-	#define _stricmp strcmp
-	#define _strnicmp strncmp
-#endif
+//#else 
+//	#define _strdup strdup
+//	#define _stricmp strcmp
+//	#define _strnicmp strncmp
+//#endif
 
 const int kSelectRead	= 1 << 0;
 const int kSelectWrite	= 1 << 1;
@@ -198,9 +198,9 @@ static int socket_noblocking(socket_t fd, int noblocking)
 
 static int last_error()
 {
-#ifdef PLATFORM_LINUX
+//#ifdef PLATFORM_LINUX
 	return errno;
-#endif
+//#endif
 	return 0;
 }
 
@@ -509,6 +509,8 @@ static int http_read_write(ft_http_client_t* http, const char* data, int len, in
 
 static int http_connect_host(ft_http_client_t* http, const char* url, struct http_parser_url* u)
 {
+//CHANGE:
+printf("url in http_coonect_host=n%s\n",url);
 	struct sockaddr_in sin;
 	char host[256] = {0};
 	int r;
@@ -530,11 +532,13 @@ static int http_connect_host(ft_http_client_t* http, const char* url, struct htt
 	
 	memset(&sin, 0, sizeof(struct sockaddr_in));
 	memcpy(host, url + u->field_data[UF_HOST].off, u->field_data[UF_HOST].len);
+printf("host=%s\n",host);
 	if(host[0] >= '0' && host[0] <= '9')
 	{
-		sin.sin_addr.s_addr = (unsigned long)inet_addr(host);
+		printf("****************\n");
+		sin.sin_addr.s_addr = /*(unsigned long)*/inet_addr(host);
 	}
-#ifdef PLATFORM_LINUX
+//#ifdef PLATFORM_LINUX
 	else
 	{
 		struct hostent* he = gethostbyname(host);
@@ -544,18 +548,19 @@ static int http_connect_host(ft_http_client_t* http, const char* url, struct htt
 		}
 		sin.sin_addr = *((struct in_addr *)he->h_addr_list[0]);
 	}
-#endif
+//#endif
 	if(sin.sin_addr.s_addr == INADDR_NONE)
 	{
 		return ERR_URL_RESOLVED_HOST;
 	}
 
 	sin.sin_port = htons(port);
+printf("port=%d\n",port);
 	sin.sin_family = AF_INET;
 
 	close_socket(http->fd);
 
-	http->fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	http->fd = socket(AF_INET, SOCK_STREAM, 0);
 
 	if(http->fd == HTTP_INVALID_SOCKET)
 	{
@@ -579,27 +584,32 @@ static int http_connect_host(ft_http_client_t* http, const char* url, struct htt
 
 	do
 	{
-		r = connect(http->fd, (struct sockaddr*)&sin, sizeof(sin));
+		r = connect(http->fd, (struct sockaddr *)&sin, sizeof(sin));
+		printf("r=%d\n",r);
 		if(r < 0)
 		{
-#ifdef PLATFORM_LINUX
+//#ifdef PLATFORM_LINUX
+			printf("1\n");
 			int error = last_error();
 			if(error == HTTP_EINTR)
 			{
+				printf("2\n");
 				continue;
 			}
 			else if( error == HTTP_EINPROGRESS || error == HTTP_EWOULDBLOCK ||  error == HTTP_EALREADY)
 			{
 				if(socket_select(http, kSelectWrite, http->timeout) == 0)
 				{
+					printf("3\n");
 					break;
 				}
 				else
 				{
+					printf("4\n");
 					return ERR_SOCKET_CONNECT_TIMEOUT;
 				}
 			}
-#endif
+//#endif
 			return ERR_SOCKET_CONNECT;
 		}
 	}while(1);
@@ -634,19 +644,24 @@ static int http_internal_sync_request(ft_http_client_t* http, const char* url,
 	http->error_code = 0;
 	
 //CHANGE:
-	printf("\n%s\n",url);
+	printf("url:\n%s\n",url);
 
 	if(http->timeout == 0) http->timeout = 15000;
 
 	if( http_parser_parse_url(url, strlen(url), 0, &u) != 0 )
 	{
+		//CHANGE:
+		printf("1");
 		return (http->error_code = ERR_URL_INVALID);
 	}
 
 
 	r = http_connect_host(http, url, &u);
+		printf("err_code:\n%d\n",r);
 	if(r != ERR_OK)
 	{
+		//CHANGE:
+		printf("2");
 		return http->error_code = r;
 	}
 	
@@ -660,15 +675,21 @@ static int http_internal_sync_request(ft_http_client_t* http, const char* url,
 	}
 	else if(http->method == M_POST)
 	{
+		//CHANGE:
+		printf("3");
 		CHECK(http_read_write(http, "POST ", 5, 0));
 	}
 
 	if(u.field_set & (1 << UF_PATH))
 	{
+		//CHANGE:
+		printf("4");
 		CHECK(http_read_write(http, url + u.field_data[UF_PATH].off, u.field_data[UF_PATH].len, 0));
 	}
 	else
 	{
+		//CHANGE:
+		printf("5");
 		CHECK(http_read_write(http, "/", 1, 0));
 	}
 
@@ -729,6 +750,8 @@ static int http_internal_sync_request(ft_http_client_t* http, const char* url,
 		}
 		else
 		{
+		//CHANGE:
+		printf("6");
 			char buf[RECV_BUF_SIZE + 1] = {0};
 
 			nread = http_read_write(http, buf, RECV_BUF_SIZE, 1);
@@ -786,7 +809,8 @@ static int http_internal_sync_request(ft_http_client_t* http, const char* url,
 
 HTTP_API const char* ft_http_sync_request(ft_http_client_t* http, const char* url, http_request_method_e m)
 {
-
+	//CHANGES:
+	printf("url0:\n%s\n",url);
 	cJSON *root = NULL;
 	cJSON *test = NULL;
 	cJSON *rand = NULL;
@@ -806,7 +830,7 @@ HTTP_API const char* ft_http_sync_request(ft_http_client_t* http, const char* ur
 	char *out = cJSON_Print(root);
 
 	//CHANGE:
-	printf("\n%s\n",out);
+	printf("Json:\n%s\n",out);
 
 	if(http == NULL)
 	{

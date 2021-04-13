@@ -3,7 +3,7 @@
  * @Author: lierenzhu
  * @Date: 2021-04-12 09:21:40
  * @LastEditors: lierenzhu
- * @LastEditTime: 2021-04-12 20:02:21
+ * @LastEditTime: 2021-04-13 16:06:30
  * @FilePath: \Chttp_client\main.c
  */
 #include "http.h"
@@ -31,8 +31,8 @@ int main() {
         case 'a':
         {
      */
-            char *url;
-            scanf("%s", url);
+            char url[128];
+            scanf("%s", &url);
             const char* body = NULL;
             body = ft_http_sync_request(http, url, M_POST);
             //ft_http_set_timeout(http, 4);
