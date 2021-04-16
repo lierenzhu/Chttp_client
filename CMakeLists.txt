@@ -8,6 +8,10 @@ include_directories(
 		./cjson/inc/
 )
 
+set(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
+set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
+
 set(SOURCE_FILES
         ./http/src/http.c
         ./http/src/http_parser.c
