@@ -3,7 +3,7 @@
 
 #define HTTP_API
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -80,7 +80,7 @@ HTTP_API const char* ft_http_sync_post_file(ft_http_client_t* http, const char* 
 
 
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 
